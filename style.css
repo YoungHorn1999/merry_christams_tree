@@ -1,0 +1,45 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #000;
+    font-family: 'Mountains of Christmas', serif; 
+}
+
+#canvas-container {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+#text-overlay {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    text-align: center;
+    z-index: 2;
+    pointer-events: none; /* Let clicks pass through to canvas */
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    width: 100%;
+}
+
+h1 {
+    font-size: 3.5rem;
+    letter-spacing: 2px;
+    margin: 0;
+    font-weight: 700;
+    color: #ffd700; /* Gold color */
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+}
+
+p {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    color: #aaa;
+    text-transform: uppercase;
+}
+
