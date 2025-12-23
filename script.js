@@ -218,6 +218,10 @@ photoUrls.forEach((url, i) => {
         sprite.scale.set(sprite.userData.baseScaleX, sprite.userData.baseScaleY, 1);
         sprite.userData.isExpanded = false;
 
+        // Random Rotation (Tilt)
+        sprite.userData.randomRotation = randomRange(-0.25, 0.25); // +/- ~15 degrees
+        sprite.material.rotation = sprite.userData.randomRotation;
+
         // Tree Position (scattered on surface)
         const normHeight = Math.random(); 
         const height = -50 + normHeight * 100; 
@@ -424,6 +428,10 @@ function animate() {
         
         sprite.scale.x += (targetScaleX - sprite.scale.x) * 0.1;
         sprite.scale.y += (targetScaleY - sprite.scale.y) * 0.1;
+
+        // Rotation (Straighten when expanded)
+        const targetRotation = sprite.userData.isExpanded ? 0 : sprite.userData.randomRotation;
+        sprite.material.rotation += (targetRotation - sprite.material.rotation) * 0.1;
 
         // Opacity
         sprite.material.opacity += (targetOpacity - sprite.material.opacity) * 0.05;
