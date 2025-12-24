@@ -184,30 +184,39 @@ const createPolaroidTexture = (imageElement) => {
 };
 
 // --- Photos ---
-// Instruct user to name files photo1.jpg, photo2.jpg, etc. or just use a loop to try loading
-// Since we can't list files in client-side JS without a server, we will try to load a range of numbered files.
-// Or we can provide a default list and comments.
+const photoObjects = [];
+const photoTextureLoader = new THREE.ImageLoader();
 
-const photoUrls = [];
-// Automatically try to load p1.jpg through p50.jpg
-// Users just need to drop files named p1.jpg, p2.jpg, etc. into the 'images' folder.
-for (let i = 1; i <= 50; i++) {
-    photoUrls.push(`./images/p${i}.jpg`);
+// Load photos from Vercel Blob storage
+async function loadPhotosFromBlob() {
+    try {
+        const response = await fetch('/api/list');
+        if (!response.ok) throw new Error('Failed to fetch image list');
+        const photoUrls = await response.json();
+
+        if (photoUrls.length === 0) {
+            console.log('No images found in Blob storage');
+            return;
+        }
+
+        photoUrls.forEach((url) => {
+            loadSinglePhoto(url);
+        });
+    } catch (error) {
+        console.error('Error loading photos from Blob:', error);
+        // Fallback: try loading from local images folder
+        console.log('Falling back to local images...');
+        for (let i = 1; i <= 50; i++) {
+            loadSinglePhoto(`./images/p${i}.jpg`);
+        }
+    }
 }
 
-// Also adding support for png just in case, though mixing arrays is tricky without checking existence.
-// A better approach for a static site is to just define a list of potential filenames.
-// Let's stick to a convention: p1.jpg, p2.jpg... 
-
-const photoObjects = [];
-const photoTextureLoader = new THREE.ImageLoader(); // Changed to ImageLoader to manipulate canvas
-
-photoUrls.forEach((url, i) => {
-    // Enable cross-origin for canvas manipulation
+function loadSinglePhoto(url) {
     photoTextureLoader.setCrossOrigin('anonymous');
-    
+
     photoTextureLoader.load(
-        url, 
+        url,
         (image) => {
             // Success callback
             const { texture, aspectRatio } = createPolaroidTexture(image);
@@ -298,13 +307,14 @@ photoUrls.forEach((url, i) => {
             photoObjects.push(sprite);
         },
         undefined, // onProgress
-        (err) => {
-            // onError: File not found or load error
-            // We just ignore it, so only existing files are added.
-            // console.warn('Could not load photo:', url);
+        () => {
+            // onError: File not found or load error - ignore silently
         }
     );
-});
+}
+
+// Initialize photos
+loadPhotosFromBlob();
 
 // Star Top
 // Create a 5-pointed star shape
